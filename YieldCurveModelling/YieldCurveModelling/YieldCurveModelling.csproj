@@ -60,10 +60,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Data\USD Yield Curve.xlsx" />
     <None Include="packages.config" />
+    <None Include="Papers\SSRN-id1676747.pdf" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Papers\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
