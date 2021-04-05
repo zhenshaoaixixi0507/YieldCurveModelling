@@ -21,6 +21,7 @@ namespace YieldCurveModelling.ExcelHelpers
         {
             Excel.Application oExcel = new Excel.Application();
             oExcel.Visible = false;
+            oExcel.DisplayAlerts = false;
             Excel.Workbook WB = oExcel.Workbooks.Open(filepath);
             Excel.Worksheet wks = (Excel.Worksheet)WB.Worksheets[tabname];
             Excel.Range rng = wks.Range[rangename];
@@ -32,14 +33,14 @@ namespace YieldCurveModelling.ExcelHelpers
             {
                 for (int i = 0; i < num; i++)
                 {
-                    result[i] = (double)rng[i+1, 1];
+                    result[i] = (double)rng[i+1, 1].Value;
                 }
             }
             if (type == ExcelOneDType.Column)
             {
                 for (int i = 0; i < num; i++)
                 {
-                    result[i] = (double)rng[1, i+1];
+                    result[i] = (double)rng[1, i+1].Value;
                 }
             }
 
@@ -57,6 +58,7 @@ namespace YieldCurveModelling.ExcelHelpers
         {
             Excel.Application oExcel = new Excel.Application();
             oExcel.Visible = false;
+            oExcel.DisplayAlerts = false;
             Excel.Workbook WB = oExcel.Workbooks.Open(filepath);
             Excel.Worksheet wks = (Excel.Worksheet)WB.Worksheets[tabname];
             Excel.Range rng = wks.Range[rangename];
@@ -67,7 +69,7 @@ namespace YieldCurveModelling.ExcelHelpers
             {
                 for (int j = 0; j < result.GetLength(1); j++)
                 {
-                    result[i, j] = (double)rng[i + 1, j + 1];
+                    result[i, j] = (double)rng[i + 1, j + 1].Value;
                 }
             }
 

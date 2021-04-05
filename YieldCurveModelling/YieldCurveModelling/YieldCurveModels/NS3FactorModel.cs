@@ -36,8 +36,9 @@ namespace YieldCurveModelling.YieldCurveModels
         public double[] Calibration()
         {
             var PSO = new PSOOptimization();
-            var lowerbound = new double[4] { 0.00001, -99.99, -99.99, 0.00001 };
-            var upperbound = new double[4] { 99.99, 99.99, 99.99, 99.99 };
+            var lowerbound = new double[4] { 0.00001, -19.99, -19.99, 0.00001 };
+            var upperbound = new double[4] { 9.99, 19.99, 19.99, 19.99 };
+            PSO.initialguess = new double[4] { 2.1,-1.5,-2.1,0.87};
             PSO.lowerbound = lowerbound;
             PSO.upperbound = upperbound;
             PSO.maximumiteration = 5000;
@@ -63,12 +64,41 @@ namespace YieldCurveModelling.YieldCurveModels
             sns3factor.tau = maturities;
             var modelyields = sns3factor.GetYield();
             var error = 0.0;
-            for (int i = 0; i < yields.Length; i++)
+            if (checkpara(para) == false)
             {
-                var temperror = (modelyields[i] - yields[i]) / (yields[i] + 0.000000000000001);
-                error = error + temperror * temperror;
+                error = 9999999999999999.99;
+            }
+            else
+            {
+                for (int i = 0; i < yields.Length; i++)
+                {
+                    var temperror = modelyields[i] - yields[i];
+                    error = error + temperror * temperror;
+                }
             }
             return error;
         }
+
+        public double[] CalculateModelOutput(double[]tau,double[]para)
+        {
+            var sns3factor = new StaticNS3FactorModel();
+            sns3factor.beta1 = para[0];
+            sns3factor.beta2 = para[1];
+            sns3factor.beta3 = para[2];
+            sns3factor.lambda = para[3];
+            sns3factor.tau =tau;
+            var modelyields = sns3factor.GetYield();
+            return modelyields;
+        }
+        public bool checkpara(double[]para)
+        {
+            var result = true;
+            if (para[0] + para[1] <= 0)
+            {
+                result = false;
+            }
+            return result;
+        }
+
     }
 }

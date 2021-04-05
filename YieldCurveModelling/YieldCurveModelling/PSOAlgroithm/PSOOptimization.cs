@@ -24,6 +24,7 @@ namespace YieldCurveModelling.PSOAlgorithm
         public Func<double[], double> objectfun { get; set; }
         public double Vmax { get; set; }
         public double tolerance { get; set; }
+        public double[] initialguess { get; set; }
 
         public double[] Optimize()
         {
@@ -34,37 +35,38 @@ namespace YieldCurveModelling.PSOAlgorithm
             var localswarm = new Dictionary<int, double[]>();
             var localbest = new Dictionary<int, double[]>();
             var Velocity = new Dictionary<int, double[]>();
-            var minerror = 9999999999999.999;
+          
 
+            for (int j = 0; j < globalbest.Length; j++)
+            {
+                globalbest[j] = initialguess[j];
+            }
+            var minerror = objectfun(globalbest);
 
             for (int i = 0; i < numofswarms; i++)
             {
                 var rnd = new MersenneTwister(i + 1, true);
                 var rnd2 = new MersenneTwister(i + 2, true);
                 var temp = new double[lowerbound.Length];
+                var tempbest = new double[lowerbound.Length];
                 var tempV = new double[lowerbound.Length];
                 for (int j = 0; j < temp.Length; j++)
                 {
                     temp[j] = (upperbound[j] - lowerbound[j]) * rnd.NextDouble() + lowerbound[j];
                     tempV[j] = 2 * Vmax * rnd2.NextDouble() - Vmax;
+                    tempbest[j] = initialguess[j];
                 }
                 localswarm.Add(i, temp.Clone() as double[]);
-                localbest.Add(i, temp.Clone() as double[]);
+                localbest.Add(i, tempbest.Clone() as double[]);
                 Velocity.Add(i, tempV.Clone() as double[]);
-                if (i == 1)
-                {
-                    minerror = objectfun(temp);
-                }
-                if (i > 1)
-                {
-                    var error = objectfun(temp);
+               
+                    var error = double.IsNaN(objectfun(temp))? 9999999999999.999: objectfun(temp);
                     if (error < minerror)
                     {
                         minerror = error;
                         globalbest = temp.Clone() as double[];
                     }
 
-                }
             }
 
             //Iteration starts
@@ -101,14 +103,14 @@ namespace YieldCurveModelling.PSOAlgorithm
                         minerror = localerror;
                     }
                 }
-                if (Math.Abs(oldglobalerror - minerror) < tolerance && i > Math.Floor((double)maximumiteration / 3 * 2))
+                if (Math.Abs(oldglobalerror - minerror) < tolerance && i > 500)
                 {
                     break;
                 }
                 else
                 {
                     oldglobalerror = minerror;
-                    Console.WriteLine("Error: " + Convert.ToString(minerror));
+                    Console.WriteLine("ObjectFun: " + Convert.ToString(minerror));
                 }
                 
             }
@@ -137,7 +139,15 @@ namespace YieldCurveModelling.PSOAlgorithm
         {
             var result = new double[oldx.Length];
             var olderror = objectfun(oldx);
+            if (double.IsNaN(olderror))
+            {
+                olderror = 9999999999999.999;
+            }
             var newerror = objectfun(newx);
+            if (double.IsNaN(newerror))
+            {
+                newerror = 9999999999999.999;
+            }
             if (newerror < olderror)
             {
                 for (int i = 0; i < result.Length; i++)

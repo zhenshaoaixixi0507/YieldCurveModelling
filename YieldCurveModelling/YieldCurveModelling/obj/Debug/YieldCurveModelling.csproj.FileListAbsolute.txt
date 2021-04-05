@@ -1,0 +1,10 @@
+C:\Users\jingz\source\repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\bin\Debug\YieldCurveModelling.exe.config
+C:\Users\jingz\source\repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\bin\Debug\YieldCurveModelling.exe
+C:\Users\jingz\source\repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\bin\Debug\YieldCurveModelling.pdb
+C:\Users\jingz\source\repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\bin\Debug\MathNet.Numerics.dll
+C:\Users\jingz\source\repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\bin\Debug\MathNet.Numerics.xml
+C:\Users\jingz\source\repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\obj\Debug\YieldCurveModelling.csprojAssemblyReference.cache
+C:\Users\jingz\source\repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\obj\Debug\YieldCurveModelling.csproj.CoreCompileInputs.cache
+C:\Users\jingz\source\repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\obj\Debug\YieldCurveModelling.csproj.CopyComplete
+C:\Users\jingz\source\repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\obj\Debug\YieldCurveModelling.exe
+C:\Users\jingz\source\repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\obj\Debug\YieldCurveModelling.pdb
