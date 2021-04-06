@@ -72,6 +72,8 @@
     <None Include="packages.config" />
     <None Include="Papers\SSRN-id1676747.pdf" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Pictures\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -46,7 +46,7 @@ namespace YieldCurveModelling.YieldCurveModels
             PSO.inertiaweightmax = 1.2;
             PSO.inertiaweightmin = 0.1;
             PSO.objectfun = Objfun;
-            PSO.tolerance = 0.0000001;
+            PSO.tolerance = 0.00000001;
             PSO.Vmax = 4;
             PSO.c1 = 2;
             PSO.c2 = 2;

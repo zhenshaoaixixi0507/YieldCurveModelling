@@ -9,6 +9,7 @@ using YieldCurveModelling.YieldCurveModels;
 using ScottPlot;
 using System.Drawing;
 using ScottPlot.Drawing;
+using System.Diagnostics;
 
 namespace YieldCurveModelling
 {
@@ -35,10 +36,14 @@ namespace YieldCurveModelling
 
             //Plot
             var plt = new ScottPlot.Plot(600, 400);
-            plt.PlotSignalXY(tau, yields,color:Color.Red);
-            plt.PlotSignalXY(tau, modeloutput, color: Color.Blue);
-           
-            plt.SaveFig("Signal.png");
+            plt.PlotSignalXY(tau, yields,color:Color.Red, label: "Market Data");
+            plt.PlotSignalXY(tau, modeloutput, color: Color.Blue, label: "Model Output");
+            plt.Legend();
+            plt.XLabel("Time to maturity");
+            plt.YLabel("Annualized yields (%)");
+            var savepath = Path.GetFullPath(Path.Combine(path, @"..\..\", "Pictures\\EmpiricalResult.png"));
+            plt.SaveFig(savepath);
+            Process.Start(savepath);
             Console.WriteLine("Press any key to exit");
             Console.ReadKey();
         }
