@@ -8,3 +8,15 @@ C:\Users\jingz\source\repos\YieldCurveModelling\YieldCurveModelling\YieldCurveMo
 C:\Users\jingz\source\repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\obj\Debug\YieldCurveModelling.csproj.CopyComplete
 C:\Users\jingz\source\repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\obj\Debug\YieldCurveModelling.exe
 C:\Users\jingz\source\repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\obj\Debug\YieldCurveModelling.pdb
+C:\Users\jingz732\Source\Repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\bin\Debug\YieldCurveModelling.exe.config
+C:\Users\jingz732\Source\Repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\bin\Debug\YieldCurveModelling.exe
+C:\Users\jingz732\Source\Repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\bin\Debug\YieldCurveModelling.pdb
+C:\Users\jingz732\Source\Repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\bin\Debug\MathNet.Numerics.dll
+C:\Users\jingz732\Source\Repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\bin\Debug\MathNet.Numerics.xml
+C:\Users\jingz732\Source\Repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\obj\Debug\YieldCurveModelling.csprojAssemblyReference.cache
+C:\Users\jingz732\Source\Repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\obj\Debug\YieldCurveModelling.csproj.CoreCompileInputs.cache
+C:\Users\jingz732\Source\Repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\obj\Debug\YieldCurveModelling.csproj.CopyComplete
+C:\Users\jingz732\Source\Repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\obj\Debug\YieldCurveModelling.exe
+C:\Users\jingz732\Source\Repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\obj\Debug\YieldCurveModelling.pdb
+C:\Users\jingz732\Source\Repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\bin\Debug\ScottPlot.dll
+C:\Users\jingz732\Source\Repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\bin\Debug\System.Drawing.Common.dll

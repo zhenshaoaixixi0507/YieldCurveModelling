@@ -103,7 +103,7 @@ namespace YieldCurveModelling.PSOAlgorithm
                         minerror = localerror;
                     }
                 }
-                if (Math.Abs(oldglobalerror - minerror) < tolerance && i > 500)
+                if (Math.Abs(oldglobalerror - minerror) < tolerance && i > 50)
                 {
                     break;
                 }
