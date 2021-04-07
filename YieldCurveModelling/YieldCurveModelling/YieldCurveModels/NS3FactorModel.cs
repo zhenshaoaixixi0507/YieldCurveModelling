@@ -36,9 +36,9 @@ namespace YieldCurveModelling.YieldCurveModels
         public double[] Calibration()
         {
             var PSO = new PSOOptimization();
-            var lowerbound = new double[4] { 0.00001, -19.99, -19.99, 0.00001 };
-            var upperbound = new double[4] { 9.99, 19.99, 19.99, 19.99 };
-            PSO.initialguess = new double[4] { 2.1,-1.5,-2.1,0.87};
+            var lowerbound = new double[4] { 0.0000001, -9.99, -9.99, 0.0000001 };
+            var upperbound = new double[4] { 9.99,9.99, 9.99, 9.99 };
+            PSO.initialguess = new double[4] { (double)1/2.1,(double)-1/1.5,(double)-1/2.1,(double)1/0.87};
             PSO.lowerbound = lowerbound;
             PSO.upperbound = upperbound;
             PSO.maximumiteration = 5000;
@@ -46,7 +46,7 @@ namespace YieldCurveModelling.YieldCurveModels
             PSO.inertiaweightmax = 1.2;
             PSO.inertiaweightmin = 0.1;
             PSO.objectfun = Objfun;
-            PSO.tolerance = 0.00000001;
+            PSO.tolerance = 0.000000001;
             PSO.Vmax = 4;
             PSO.c1 = 2;
             PSO.c2 = 2;
@@ -57,10 +57,10 @@ namespace YieldCurveModelling.YieldCurveModels
         public double Objfun(double[]para)
         {
             var sns3factor = new StaticNS3FactorModel();
-            sns3factor.beta1 = para[0];
-            sns3factor.beta2 = para[1];
-            sns3factor.beta3 = para[2];
-            sns3factor.lambda = para[3];
+            sns3factor.beta1 = (double)1/(para[0]+0.00000000001);
+            sns3factor.beta2 = (double)1 / (para[1] + 0.00000000001);
+            sns3factor.beta3 = (double)1 / (para[2] + 0.00000000001);
+            sns3factor.lambda = (double)1 / (para[3] + 0.00000000001);
             sns3factor.tau = maturities;
             var modelyields = sns3factor.GetYield();
             var error = 0.0;
@@ -82,10 +82,10 @@ namespace YieldCurveModelling.YieldCurveModels
         public double[] CalculateModelOutput(double[]tau,double[]para)
         {
             var sns3factor = new StaticNS3FactorModel();
-            sns3factor.beta1 = para[0];
-            sns3factor.beta2 = para[1];
-            sns3factor.beta3 = para[2];
-            sns3factor.lambda = para[3];
+            sns3factor.beta1 = (double)1 / (para[0] + 0.00000000001);
+            sns3factor.beta2 = (double)1 / (para[1] + 0.00000000001);
+            sns3factor.beta3 = (double)1 / (para[2] + 0.00000000001);
+            sns3factor.lambda = (double)1 / (para[3] + 0.00000000001);
             sns3factor.tau =tau;
             var modelyields = sns3factor.GetYield();
             return modelyields;
