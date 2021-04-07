@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExcelHelpers\ExcelReader.cs" />
+    <Compile Include="Helpers\KalmanFilterAlgorithm.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PSOAlgroithm\PSOOptimization.cs" />
