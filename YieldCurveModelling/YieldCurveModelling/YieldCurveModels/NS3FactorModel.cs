@@ -58,7 +58,7 @@ namespace YieldCurveModelling.YieldCurveModels
             //ISO.objectfun = Objfun;
             //ISO.lowerbound = lowerbound;
             //ISO.upperbound = upperbound;
-            //ISO.maximumiteration = 5000;
+            //ISO.maximumiteration = 10000;
             //ISO.locationsize = 20;
             //ISO.alphamin = 0.1;
             //ISO.alphamax = 0.9;

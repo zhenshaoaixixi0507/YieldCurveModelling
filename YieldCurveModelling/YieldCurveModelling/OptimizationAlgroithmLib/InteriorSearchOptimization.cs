@@ -56,10 +56,10 @@ namespace YieldCurveModelling.OptimizationAlgorithmLib
                 var rnd1= new MersenneTwister(i+1,true);
                 var rnd2= new MersenneTwister(i+2,true);
                 var rnd3=new MersenneTwister(i + 3, true);
-                
-                for(int j=0;j<locationsize;j++)
+                var alpha = alphamin + (alphamax - alphamin) / maximumiteration*i;
+                for (int j=0;j<locationsize;j++)
                 {
-                   var alpha = alphamin +(alphamax - alphamin) / maximumiteration;
+                   
                    globalbest =Generatenewglobal(i+j,globalbest).Clone() as double[];
                    var r1=rnd1.NextDouble();
                    if(r1<=alpha)
