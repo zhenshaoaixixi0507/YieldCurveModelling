@@ -61,20 +61,24 @@
   <ItemGroup>
     <Compile Include="ExcelHelpers\ExcelReader.cs" />
     <Compile Include="Helpers\KalmanFilterAlgorithm.cs" />
+    <Compile Include="Helpers\USYieldDataXMLReader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PSOAlgroithm\PSOOptimization.cs" />
+    <Compile Include="OptimizationAlgroithmLib\InteriorSearchOptimization.cs" />
+    <Compile Include="OptimizationAlgroithmLib\PSOOptimization.cs" />
     <Compile Include="YieldCurveModels\NS3FactorModel.cs" />
     <Compile Include="YieldCurveModels\NSS4FactorModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Data\USD Yield Curve.xlsx" />
     <None Include="packages.config" />
     <None Include="Papers\SSRN-id1676747.pdf" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Pictures\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Data\USDYieldCurveDailyData2020.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using YieldCurveModelling.PSOAlgorithm;
+using YieldCurveModelling.OptimizationAlgorithmLib;
 namespace YieldCurveModelling.YieldCurveModels
 {
     public class StaticNS3FactorModel
@@ -35,10 +35,10 @@ namespace YieldCurveModelling.YieldCurveModels
 
         public double[] Calibration()
         {
-            var PSO = new PSOOptimization();
             var lowerbound = new double[4] { 0.0000001, -9.99, -9.99, 0.0000001 };
-            var upperbound = new double[4] { 9.99,9.99, 9.99, 9.99 };
-            PSO.initialguess = new double[4] { (double)1/2.1,(double)-1/1.5,(double)-1/2.1,(double)1/0.87};
+            var upperbound = new double[4] { 9.99, 9.99, 9.99, 9.99 };
+            var PSO = new PSOOptimization();
+            PSO.initialguess = new double[4] { (double)1 / 2.1, (double)-1 / 1.5, (double)-1 / 2.1, (double)1 / 0.87 };
             PSO.lowerbound = lowerbound;
             PSO.upperbound = upperbound;
             PSO.maximumiteration = 5000;
@@ -52,6 +52,16 @@ namespace YieldCurveModelling.YieldCurveModels
             PSO.c2 = 2;
             PSO.chi = 0.73;
             var optimizedp = PSO.Optimize();
+            //var ISO = new InteriorSearchOptimization();
+            //ISO.sizeofinitialguess = 1000;
+            //ISO.tolerance = 0.00000001;
+            //ISO.objectfun = Objfun;
+            //ISO.lowerbound = lowerbound;
+            //ISO.upperbound = upperbound;
+            //ISO.maximumiteration = 5000;
+            //ISO.locationsize = 20;
+            //ISO.alpha = 0.1;
+            //var optimizedp = ISO.Optimize();
             return optimizedp;
         }
         public double Objfun(double[]para)
@@ -72,7 +82,7 @@ namespace YieldCurveModelling.YieldCurveModels
             {
                 for (int i = 0; i < yields.Length; i++)
                 {
-                    var temperror = modelyields[i] - yields[i];
+                    var temperror = (modelyields[i] - yields[i]);
                     error = error + temperror * temperror;
                 }
             }

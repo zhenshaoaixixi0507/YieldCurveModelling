@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using YieldCurveModelling.PSOAlgorithm;
+using YieldCurveModelling.OptimizationAlgorithmLib;
 
 namespace YieldCurveModelling.YieldCurveModels
 {
@@ -46,7 +46,7 @@ namespace YieldCurveModelling.YieldCurveModels
             PSO.lowerbound = lowerbound;
             PSO.upperbound = upperbound;
             PSO.maximumiteration = 5000;
-            PSO.numofswarms = 200;
+            PSO.numofswarms =200;
             PSO.inertiaweightmax = 1.2;
             PSO.inertiaweightmin = 0.1;
             PSO.objectfun = Objfun;
@@ -78,7 +78,7 @@ namespace YieldCurveModelling.YieldCurveModels
             {
                 for (int i = 0; i < yields.Length; i++)
                 {
-                    var temperror = modelyields[i] - yields[i];
+                    var temperror = (modelyields[i] - yields[i]);
                     error = error + temperror * temperror;
                 }
             }

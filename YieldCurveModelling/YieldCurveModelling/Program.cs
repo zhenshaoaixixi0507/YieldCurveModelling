@@ -5,11 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using YieldCurveModelling.ExcelHelpers;
+using YieldCurveModelling.Helpers;
 using YieldCurveModelling.YieldCurveModels;
 using ScottPlot;
 using System.Drawing;
 using ScottPlot.Drawing;
 using System.Diagnostics;
+using System.Xml;
 
 namespace YieldCurveModelling
 {
@@ -17,17 +19,16 @@ namespace YieldCurveModelling
     {
         static void Main(string[] args)
         {
-            var excelreader = new ExcelReader();
-            string path = Directory.GetCurrentDirectory();
-         
-            excelreader.filepath = Path.GetFullPath(Path.Combine(path, @"..\..\", "Data\\USD Yield Curve.xlsx"));//@"C:\Users\jingz\source\repos\YieldCurveModelling\YieldCurveModelling\YieldCurveModelling\Data\USD Yield Curve.xlsx";
-            excelreader.tabname = "2021";
-            excelreader.rangename = "B64:M64";
-            excelreader.type = ExcelOneDType.Column;
-            var yields = excelreader.Get1DData();
+
+            //Read data
+            var USDataReader = new USYieldDataXMLReader();
+            USDataReader.filepath= Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\", "Data\\USDYieldCurveDailyData2020.xml"));
+            var Data = USDataReader.GetFullTimeSeriesData();
+
+            var yields = Data["2020-04-16"];
             var tau = new double[12] { (double)1/12, (double)2/12, (double)3/12, (double)6/12,1,2,3,5,7,10,20,30};
-            //var yields = new double[12] {0.02,0.02,0.02,0.04, 0.07, 0.19,0.39,0.97,1.42,1.72,2.27,2.35};
-            // Test--------------------------------------- NS 3 factors model------------------------------------------------//
+
+            // Test--------------------------------------- Static NS 3 factors model------------------------------------------------//
             var NS3factorCalibration = new StaticNS3FactorModelCalibration();
             NS3factorCalibration.yields = yields;
             NS3factorCalibration.maturities = tau;
@@ -41,11 +42,11 @@ namespace YieldCurveModelling
             plt.Legend();
             plt.XLabel("Time to maturity");
             plt.YLabel("Annualized yields (%)");
-            var savepath = Path.GetFullPath(Path.Combine(path, @"..\..\", "Pictures\\NS3FactorModelEmpiricalResult.png"));
+            var savepath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\", "Pictures\\NS3FactorModelEmpiricalResult.png"));
             plt.SaveFig(savepath);
             Process.Start(savepath);
 
-            // Test--------------------------------------- NS 4 factors model------------------------------------------------//
+            // Test--------------------------------------- Static NS 4 factors model------------------------------------------------//
             var NS4factorCalibration = new StaticNS4FactorModelCalibration();
             NS4factorCalibration.yields = yields;
             NS4factorCalibration.maturities = tau;
@@ -59,7 +60,7 @@ namespace YieldCurveModelling
             plt2.Legend();
             plt2.XLabel("Time to maturity");
             plt2.YLabel("Annualized yields (%)");
-            var savepath2 = Path.GetFullPath(Path.Combine(path, @"..\..\", "Pictures\\NS4FactorModelEmpiricalResult.png"));
+            var savepath2 = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\", "Pictures\\NS4FactorModelEmpiricalResult.png"));
             plt2.SaveFig(savepath2);
             Process.Start(savepath2);
 

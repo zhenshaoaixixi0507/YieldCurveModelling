@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MathNet.Numerics.Random;
 
-namespace YieldCurveModelling.PSOAlgorithm
+namespace YieldCurveModelling.OptimizationAlgorithmLib
 {
     public class PSOOptimization
     {
