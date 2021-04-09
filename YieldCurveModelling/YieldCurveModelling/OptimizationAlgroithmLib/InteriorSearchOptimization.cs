@@ -20,15 +20,15 @@ namespace YieldCurveModelling.OptimizationAlgorithmLib
         public double tolerance { get; set; }
         public Func<double[], double> objectfun { get; set; }
         public int sizeofinitialguess { get; set; }
-        public double alpha { get; set; }
+        public double alphamin { get; set; }
+        public double alphamax { get; set; }
         public double[] Optimize()
         {
 
             //Initialize 
 
-            var best = new double();
             var globalbest = new double[lowerbound.Length];
-            best = 9999999999999999.99;
+            var best = 999999999999999.99;
             for (int i = 0; i < sizeofinitialguess; i++)
             {
                 var rnd = new MersenneTwister(i + 3, true);
@@ -56,9 +56,11 @@ namespace YieldCurveModelling.OptimizationAlgorithmLib
                 var rnd1= new MersenneTwister(i+1,true);
                 var rnd2= new MersenneTwister(i+2,true);
                 var rnd3=new MersenneTwister(i + 3, true);
+                
                 for(int j=0;j<locationsize;j++)
                 {
-                   globalbest=Generatenewglobal(i+j,globalbest).Clone() as double[];
+                   var alpha = alphamin +(alphamax - alphamin) / maximumiteration;
+                   globalbest =Generatenewglobal(i+j,globalbest).Clone() as double[];
                    var r1=rnd1.NextDouble();
                    if(r1<=alpha)
                    {

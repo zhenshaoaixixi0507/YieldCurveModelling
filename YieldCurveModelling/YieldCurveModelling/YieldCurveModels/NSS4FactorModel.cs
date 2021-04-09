@@ -40,9 +40,9 @@ namespace YieldCurveModelling.YieldCurveModels
         public double[] Calibration()
         {
             var PSO = new PSOOptimization();
-            var lowerbound = new double[6] { 0.0000001, -9.99, -9.99, -9.99, 0.0000001, 0.0000001 };
-            var upperbound = new double[6] {9.99, 9.99, 9.99, 9.99, 9.99,9.99};
-            PSO.initialguess = new double[6] {(double) 1/2.1, (double)-1/1.8,(double)-1/2.1,(double)1/8.2,(double)1/0.5,(double)1/11.2 };
+            var lowerbound = new double[6] { 0.0000001, -29.99, -29.99, -29.99, 0.00000001, 0.00000001 };
+            var upperbound = new double[6] {14.99, 29.99, 29.99, 29.99, 29.99,29.99};
+            PSO.initialguess = new double[6] {2.1, -1.8,-2.1,8.2,0.5,11.2 };
             PSO.lowerbound = lowerbound;
             PSO.upperbound = upperbound;
             PSO.maximumiteration = 5000;
@@ -61,16 +61,16 @@ namespace YieldCurveModelling.YieldCurveModels
         public double Objfun(double[] para)
         {
             var sns4factor = new StaticNS4FactorModel();
-            sns4factor.beta1 = (double)1 / (para[0] + 0.00000000001);
-            sns4factor.beta2 = (double)1 / (para[1] + 0.00000000001);
-            sns4factor.beta3 = (double)1 / (para[2] + 0.00000000001);
-            sns4factor.beta4 = (double)1 / (para[3] + 0.00000000001);
-            sns4factor.lambda1 = (double)1 / (para[4] + 0.00000000001);
-            sns4factor.lambda2 = (double)1 / (para[5] + 0.00000000001);
+            sns4factor.beta1 =para[0] ;
+            sns4factor.beta2 = para[1];
+            sns4factor.beta3 = para[2];
+            sns4factor.beta4 = para[3] ;
+            sns4factor.lambda1 =para[4];
+            sns4factor.lambda2 =para[5];
             sns4factor.tau = maturities;
             var modelyields = sns4factor.GetYield();
             var error = 0.0;
-            if (checkpara(para) == false)
+            if (checkpara(sns4factor) == false)
             {
                 error = 9999999999999999.99;
             }
@@ -88,20 +88,20 @@ namespace YieldCurveModelling.YieldCurveModels
         public double[] CalculateModelOutput(double[] tau, double[] para)
         {
             var sns4factor = new StaticNS4FactorModel();
-            sns4factor.beta1 = (double)1 / (para[0] + 0.00000000001);
-            sns4factor.beta2 = (double)1 / (para[1] + 0.00000000001);
-            sns4factor.beta3 = (double)1 / (para[2] + 0.00000000001);
-            sns4factor.beta4 = (double)1 / (para[3] + 0.00000000001);
-            sns4factor.lambda1 = (double)1 / (para[4] + 0.00000000001);
-            sns4factor.lambda2 = (double)1 / (para[5] + 0.00000000001);
+            sns4factor.beta1 = para[0];
+            sns4factor.beta2 = para[1];
+            sns4factor.beta3 = para[2];
+            sns4factor.beta4 = para[3];
+            sns4factor.lambda1 = para[4];
+            sns4factor.lambda2 = para[5];
             sns4factor.tau = tau;
             var modelyields = sns4factor.GetYield();
             return modelyields;
         }
-        public bool checkpara(double[] para)
+        public bool checkpara(StaticNS4FactorModel n4factor)
         {
             var result = true;
-            if (para[0] + para[1] <= 0)
+            if (n4factor.beta1 + n4factor.beta2 <= 0)
             {
                 result = false;
             }
