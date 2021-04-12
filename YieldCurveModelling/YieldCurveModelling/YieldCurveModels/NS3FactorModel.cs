@@ -6,6 +6,33 @@ using System.Threading.Tasks;
 using YieldCurveModelling.OptimizationAlgorithmLib;
 namespace YieldCurveModelling.YieldCurveModels
 {
+
+    public class DynamicNS3FactorModel
+    { 
+        public double[] beta1 { get; set; }
+        public double[] beta2 { get; set; }
+        public double[] beta3 { get; set; }
+        public double[] lambda { get; set; }
+        public double[] tau { get; set; }
+        public Dictionary<int, double[]> GetYields()
+        {
+            var result = new Dictionary<int, double[]>();
+            for (int t = 0; t < beta1.Length; t++)
+            {
+                var temp = new double[tau.Length];
+                for (int i = 0; i < tau.Length; i++)
+                {
+                    var scalefactor = tau[i] / lambda[t];
+                    var a = (1 - Math.Exp(-scalefactor)) / scalefactor;
+                    var b = a - Math.Exp(-scalefactor);
+
+                    temp[i] = beta1[t] + beta2[t] * a + beta3[t] * b;
+                }
+                result.Add(t, temp.Clone() as double[]);
+            }
+            return result;
+        }
+    }
     public class StaticNS3FactorModel
     {
         //Implement Nelson-Siegal 3 factor model
@@ -52,17 +79,6 @@ namespace YieldCurveModelling.YieldCurveModels
             PSO.c2 = 2;
             PSO.chi = 0.73;
             var optimizedp = PSO.Optimize();
-            //var ISO = new InteriorSearchOptimization();
-            //ISO.sizeofinitialguess = 1000;
-            //ISO.tolerance = 0.00000001;
-            //ISO.objectfun = Objfun;
-            //ISO.lowerbound = lowerbound;
-            //ISO.upperbound = upperbound;
-            //ISO.maximumiteration = 10000;
-            //ISO.locationsize = 20;
-            //ISO.alphamin = 0.1;
-            //ISO.alphamax = 0.9;
-            //var optimizedp = ISO.Optimize();
             return optimizedp;
         }
         public double Objfun(double[]para)
