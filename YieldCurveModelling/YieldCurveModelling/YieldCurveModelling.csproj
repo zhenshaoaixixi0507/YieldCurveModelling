@@ -72,6 +72,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Papers\Kalman Filtering of Generalized Vasicek Term Structure Models.pdf" />
     <None Include="Papers\SSRN-id1676747.pdf" />
     <None Include="Papers\The Vasicek Model Fitted By The Kalman Filter Applied To The Long-Run Term Structure.pdf" />
   </ItemGroup>
