@@ -1,9 +1,12 @@
-﻿using System;
+﻿using MathNet.Numerics.LinearAlgebra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using YieldCurveModelling.OptimizationAlgorithmLib;
+using MathNet.Numerics.Statistics;
+using YieldCurveModelling.Helpers;
 namespace YieldCurveModelling.YieldCurveModels
 {
 
@@ -31,6 +34,220 @@ namespace YieldCurveModelling.YieldCurveModels
                 result.Add(t, temp.Clone() as double[]);
             }
             return result;
+        }
+    }
+    public class DynamicNS3FactorModelCalibration
+    {
+        public Dictionary<string,double[]> yields { get; set; }
+        public double[] maturities { get; set; }
+        private Matrix<double> initialstate;
+        private Matrix<double> initialstatecovariance;
+        public double[] Optimize()
+        {
+            Initialization();
+
+            var lowerbound = new double[16];
+            var upperbound = new double[16];
+            var initialguess = new double[16];
+            lowerbound[0] = 0.0000001;
+            upperbound[0] = 29.99;
+            initialguess[0] = 0.87;
+            
+            for (int i = 1; i < lowerbound.Length; i++)
+            {
+                lowerbound[i] = 0.0000001;
+                upperbound[i] = 2.99;
+                initialguess[i] = 0.01;
+            }
+            var PSO = new PSOOptimization();
+            PSO.initialguess = initialguess;
+            PSO.lowerbound = lowerbound;
+            PSO.upperbound = upperbound;
+            PSO.maximumiteration = 5000;
+            PSO.numofswarms = 200;
+            PSO.inertiaweightmax = 1.2;
+            PSO.inertiaweightmin = 0.1;
+            PSO.objectfun = DynamicNS3FactorModelObjfun;
+            PSO.tolerance = 0.000000001;
+            PSO.Vmax = 4;
+            PSO.c1 = 2;
+            PSO.c2 = 2;
+            PSO.chi = 0.73;
+            var optimizedp = PSO.Optimize();
+            return optimizedp;
+        }
+        public void Initialization()
+        {
+            //Calculate initialstate and initialstatecovariance
+            var M = Matrix<double>.Build;
+            initialstate= M.Dense(3, 1);
+            initialstatecovariance= M.DenseDiagonal(3, 3, 0.00);
+            var tempyields = new double[maturities.Length];
+            var StaticNS3factorCalibration = new StaticNS3FactorModelCalibration();
+            StaticNS3factorCalibration.maturities = maturities;
+            var tempbeta1 = new double[30];
+            var tempbeta2 = new double[30];
+            var tempbeta3 = new double[30];
+            var templambda = new double[30];
+            Parallel.For(0, 30, i =>
+            {
+                tempyields = yields[yields.ElementAt(i).Key].Clone() as double[];
+                StaticNS3factorCalibration.yields = tempyields;
+                var temppara = StaticNS3factorCalibration.Calibration();
+                tempbeta1[i] = temppara[0];
+                tempbeta2[i] = temppara[1];
+                tempbeta3[i] = temppara[2];
+
+            });
+            initialstate[0, 0] = ArrayStatistics.Mean(tempbeta1);
+            initialstate[1, 0] = ArrayStatistics.Mean(tempbeta2);
+            initialstate[2, 0] = ArrayStatistics.Mean(tempbeta3);
+          
+            initialstatecovariance[0, 0] = ArrayStatistics.Covariance(tempbeta1, tempbeta1);
+            initialstatecovariance[0, 1] = ArrayStatistics.Covariance(tempbeta1, tempbeta2);
+            initialstatecovariance[0, 2] = ArrayStatistics.Covariance(tempbeta1, tempbeta3);
+          
+            initialstatecovariance[1, 0] = ArrayStatistics.Covariance(tempbeta2, tempbeta1);
+            initialstatecovariance[1, 1] = ArrayStatistics.Covariance(tempbeta2, tempbeta2);
+            initialstatecovariance[1, 2] = ArrayStatistics.Covariance(tempbeta2, tempbeta3);
+           
+            initialstatecovariance[2, 0] = ArrayStatistics.Covariance(tempbeta3, tempbeta1);
+            initialstatecovariance[2, 1] = ArrayStatistics.Covariance(tempbeta3, tempbeta2);
+            initialstatecovariance[2, 2] = ArrayStatistics.Covariance(tempbeta3, tempbeta3);
+
+           
+
+        }
+        public (double[], double[], double[]) GetDynamicBetas(double[] para)
+        {
+            var tvbeta1 = new double[yields.Count];
+            var tvbeta2 = new double[yields.Count];
+            var tvbeta3 = new double[yields.Count];
+            var numofyields = 12;
+            var lambda = para[0];
+            var sigma_beta = new double[3];
+            var sigma_yields = new double[numofyields];
+            for (int i = 0; i < sigma_yields.Length; i++)
+            {
+                if (i < 3)
+                {
+                    sigma_beta[i] = para[i + 1];
+                }
+                sigma_yields[i] = para[4 + i];
+            }
+
+            var M = Matrix<double>.Build;
+            // Initilize state noise covariance
+            var statenoisecovariance = M.DenseOfDiagonalArray(sigma_beta);
+            var observationnoisecov = M.DenseOfDiagonalArray(sigma_yields);
+            var statetransition = M.DenseDiagonal(sigma_beta.Length, sigma_beta.Length, 1.00);//Random walk;
+
+            // Kalman filter alogrithm starts
+            var I = M.DenseDiagonal(initialstate.RowCount, initialstate.RowCount, 1.00);
+            var observationmodel = GetObservationModel(lambda, maturities);
+            for (int i = 0; i < yields.Count; i++)
+            {
+
+                var priorstate = statetransition.Multiply(initialstate);
+                var priorcov = statetransition.Multiply(initialstatecovariance).Multiply(statetransition.Transpose()).Add(statenoisecovariance);
+                var tempobs = GetObservationAtSingleTimePoint(yields[yields.ElementAt(i).Key]);
+                var innovation = tempobs.Subtract(observationmodel.Multiply(priorstate));
+                var innovationcov = observationmodel.Multiply(priorcov).Multiply(observationmodel.Transpose()).Add(observationnoisecov);
+                var kalmangain = priorcov.Multiply(observationmodel.Transpose()).Multiply(innovationcov.Inverse());
+                var posterioristate = priorstate.Add(kalmangain.Multiply(innovation));
+                tvbeta1[i] = posterioristate[0,0];
+                tvbeta2[i] = posterioristate[1, 0];
+                tvbeta3[i] = posterioristate[2,0];
+                initialstate = posterioristate.Clone();
+                initialstatecovariance = I.Subtract(kalmangain.Multiply(observationmodel)).Multiply(priorcov);
+            }
+            return (tvbeta1, tvbeta2, tvbeta3);
+        }
+        public double DynamicNS3FactorModelObjfun(double[] para)
+        {
+            // Split parameters
+            var numofyields = 12;
+            var lambda = para[0];
+            var sigma_beta= new double[3];
+            var sigma_yields = new double[numofyields];
+            for (int i = 0; i < sigma_yields.Length; i++)
+            {
+                if (i < 3)
+                {
+                    sigma_beta[i] = para[i+1];
+                }
+                sigma_yields[i] = para[4 + i];
+            }
+
+            var M = Matrix<double>.Build;
+            // Initilize state noise covariance
+            var statenoisecovariance = M.DenseOfDiagonalArray(sigma_beta);
+            var observationnoisecov = M.DenseOfDiagonalArray(sigma_yields);
+            var statetransition = M.DenseDiagonal(sigma_beta.Length, sigma_beta.Length, 1.00);//Random walk;
+
+             // Kalman filter alogrithm starts
+            var I = M.DenseDiagonal(initialstate.RowCount, initialstate.RowCount, 1.00);
+            double loglikelihood = 0;
+            var timevaryingpara = new Dictionary<int, Matrix<double>>();
+            var observationmodel = GetObservationModel(lambda, maturities);
+            for (int i = 0; i < yields.Count; i++)
+            {
+                
+                var priorstate = statetransition.Multiply(initialstate);
+                var priorcov = statetransition.Multiply(initialstatecovariance).Multiply(statetransition.Transpose()).Add(statenoisecovariance);
+                var tempobs = GetObservationAtSingleTimePoint(yields[yields.ElementAt(i).Key]);
+                var innovation = tempobs.Subtract(observationmodel.Multiply(priorstate));
+                var innovationcov = observationmodel.Multiply(priorcov).Multiply(observationmodel.Transpose()).Add(observationnoisecov);
+                var kalmangain = priorcov.Multiply(observationmodel.Transpose()).Multiply(innovationcov.Inverse());
+                var posterioristate = priorstate.Add(kalmangain.Multiply(innovation));
+                if (checkdynamicpara(posterioristate) == false)
+                {
+                    loglikelihood = 999999999999999999.99;
+                    break;
+                }
+                timevaryingpara.Add(i, posterioristate.Clone());
+                initialstate = posterioristate.Clone();
+                initialstatecovariance = I.Subtract(kalmangain.Multiply(observationmodel)).Multiply(priorcov);
+                loglikelihood = loglikelihood + GetLogLiklihoodValueAtSingleTimePoint(innovationcov, innovation);
+            }
+
+            return loglikelihood;
+        }
+        public bool checkdynamicpara(Matrix<double> posterioristate)
+        {
+            var result = true;
+            if (posterioristate[0,0] + posterioristate[1,0] <= 0)
+            {
+                result = false;
+            }
+            return result;
+        }
+        public Matrix<double> GetObservationModel(double lambda,double[]matuirities)
+        {
+            var M = Matrix<double>.Build;
+            var results = M.Dense(matuirities.Length,3);
+            for (int i = 0; i < results.RowCount; i++)
+            {
+                results[i, 0] = 1;
+                results[i, 1] = (1 - Math.Exp(-lambda * matuirities[i])) / (lambda * matuirities[i]);
+                results[i, 2] = (1 - Math.Exp(-lambda * matuirities[i])) / (lambda * matuirities[i])-Math.Exp(-lambda*matuirities[i]);
+            }
+            return results;
+        }
+        private Matrix<double> GetObservationAtSingleTimePoint(double[] x)
+        {
+            var M = Matrix<double>.Build;
+            var result = M.Dense(x.Length, 1);
+            for (int i = 0; i < result.RowCount; i++)
+            {
+                result[i, 0] = x[i];
+            }
+
+            return result;
+        }
+        private double GetLogLiklihoodValueAtSingleTimePoint(Matrix<double> innovationcov, Matrix<double> innovation)
+        {
+            return 0.5 * Math.Log(innovationcov.Determinant()) + 0.5 * innovation.Transpose().Multiply(innovationcov.Inverse()).Multiply(innovation)[0, 0];
         }
     }
     public class StaticNS3FactorModel
@@ -72,7 +289,7 @@ namespace YieldCurveModelling.YieldCurveModels
             PSO.numofswarms = 200;
             PSO.inertiaweightmax = 1.2;
             PSO.inertiaweightmin = 0.1;
-            PSO.objectfun = Objfun;
+            PSO.objectfun = StaticNS3FactorModelObjfun;
             PSO.tolerance = 0.000000001;
             PSO.Vmax = 4;
             PSO.c1 = 2;
@@ -81,7 +298,7 @@ namespace YieldCurveModelling.YieldCurveModels
             var optimizedp = PSO.Optimize();
             return optimizedp;
         }
-        public double Objfun(double[]para)
+        public double StaticNS3FactorModelObjfun(double[]para)
         {
             var sns3factor = new StaticNS3FactorModel();
             sns3factor.beta1 = para[0];

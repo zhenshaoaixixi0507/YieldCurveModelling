@@ -28,42 +28,76 @@ namespace YieldCurveModelling
             var yields = Data["2020-04-17"];
             var tau = new double[12] { (double)1/12, (double)2/12, (double)3/12, (double)6/12,1,2,3,5,7,10,20,30};
 
-            // Test--------------------------------------- Static NS 3 factors model------------------------------------------------//
-            var NS3factorCalibration = new StaticNS3FactorModelCalibration();
-            NS3factorCalibration.yields = yields;
-            NS3factorCalibration.maturities = tau;
-            var optimziedpara = NS3factorCalibration.Calibration();
-            var modeloutput = NS3factorCalibration.CalculateModelOutput(tau, optimziedpara);
-            Console.WriteLine("NS 3 Factor Model Is Calibrated.");
-            //Plot
-            var plt = new ScottPlot.Plot(600, 400);
-            plt.PlotSignalXY(tau, yields, color: Color.Red, label: "Market Data");
-            plt.PlotSignalXY(tau, modeloutput, color: Color.Blue, label: "Model Output");
-            plt.Legend();
-            plt.XLabel("Time to maturity");
-            plt.YLabel("Annualized yields (%)");
-            var savepath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\", "Pictures\\NS3FactorModelEmpiricalResult.png"));
-            plt.SaveFig(savepath);
-            Process.Start(savepath);
+            //// Test--------------------------------------- Static NS 3 factors model------------------------------------------------//
+            //var NS3factorCalibration = new StaticNS3FactorModelCalibration();
+            //NS3factorCalibration.yields = yields;
+            //NS3factorCalibration.maturities = tau;
+            //var optimziedpara = NS3factorCalibration.Calibration();
+            //var modeloutput = NS3factorCalibration.CalculateModelOutput(tau, optimziedpara);
+            //Console.WriteLine("NS 3 Factor Model Is Calibrated.");
+            ////Plot
+            //var plt = new ScottPlot.Plot(600, 400);
+            //plt.PlotSignalXY(tau, yields, color: Color.Red, label: "Market Data");
+            //plt.PlotSignalXY(tau, modeloutput, color: Color.Blue, label: "Model Output");
+            //plt.Legend();
+            //plt.XLabel("Time to maturity");
+            //plt.YLabel("Annualized yields (%)");
+            //var savepath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\", "Pictures\\NS3FactorModelEmpiricalResult.png"));
+            //plt.SaveFig(savepath);
+            //Process.Start(savepath);
 
-            // Test--------------------------------------- Static NS 4 factors model------------------------------------------------//
-            var NS4factorCalibration = new StaticNS4FactorModelCalibration();
-            NS4factorCalibration.yields = yields;
-            NS4factorCalibration.maturities = tau;
-            var optimziedpara2 = NS4factorCalibration.Calibration();
-            var modeloutput2 = NS4factorCalibration.CalculateModelOutput(tau, optimziedpara2);
-            Console.WriteLine("NS 4 Factor Model Is Calibrated.");
-            //Plot
-            var plt2 = new ScottPlot.Plot(600, 400);
-            plt2.PlotSignalXY(tau, yields, color: Color.Red, label: "Market Data");
-            plt2.PlotSignalXY(tau, modeloutput2, color: Color.Blue, label: "Model Output");
-            plt2.Legend();
-            plt2.XLabel("Time to maturity");
-            plt2.YLabel("Annualized yields (%)");
-            var savepath2 = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\", "Pictures\\NS4FactorModelEmpiricalResult.png"));
-            plt2.SaveFig(savepath2);
-            Process.Start(savepath2);
+            //// Test--------------------------------------- Static NS 4 factors model------------------------------------------------//
+            //var NS4factorCalibration = new StaticNS4FactorModelCalibration();
+            //NS4factorCalibration.yields = yields;
+            //NS4factorCalibration.maturities = tau;
+            //var optimziedpara2 = NS4factorCalibration.Calibration();
+            //var modeloutput2 = NS4factorCalibration.CalculateModelOutput(tau, optimziedpara2);
+            //Console.WriteLine("NS 4 Factor Model Is Calibrated.");
+            ////Plot
+            //var plt2 = new ScottPlot.Plot(600, 400);
+            //plt2.PlotSignalXY(tau, yields, color: Color.Red, label: "Market Data");
+            //plt2.PlotSignalXY(tau, modeloutput2, color: Color.Blue, label: "Model Output");
+            //plt2.Legend();
+            //plt2.XLabel("Time to maturity");
+            //plt2.YLabel("Annualized yields (%)");
+            //var savepath2 = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\", "Pictures\\NS4FactorModelEmpiricalResult.png"));
+            //plt2.SaveFig(savepath2);
+            //Process.Start(savepath2);
 
+            //Test dynamic NS3 factor model
+            var DynaimcNS3factor = new DynamicNS3FactorModelCalibration();
+            DynaimcNS3factor.yields = Data;
+            DynaimcNS3factor.maturities = tau;
+            var optimziedpara=DynaimcNS3factor.Optimize();
+            (var tvbeta1, var tvbeta2, var tvbeta3) = DynaimcNS3factor.GetDynamicBetas(optimziedpara);
+            //Plot
+            // Beta1
+            var pltbeta1 = new ScottPlot.Plot(600, 400);
+            pltbeta1.PlotSignal(tvbeta1, color: Color.Red, label: "Time-varying Beta1");
+            pltbeta1.Legend();
+            pltbeta1.XLabel("History Time");
+            pltbeta1.YLabel("Beta1");
+            var savepathbeta1 = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\", "Pictures\\DynamicNS3FactorModelBeta1.png"));
+            pltbeta1.SaveFig(savepathbeta1);
+            Process.Start(savepathbeta1);
+            // Beta2
+            var pltbeta2 = new ScottPlot.Plot(600, 400);
+            pltbeta2.PlotSignal(tvbeta2, color: Color.Red, label: "Time-varying Beta2");
+            pltbeta2.Legend();
+            pltbeta2.XLabel("History Time");
+            pltbeta2.YLabel("Beta2");
+            var savepathbeta2 = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\", "Pictures\\DynamicNS3FactorModelBeta2.png"));
+            pltbeta2.SaveFig(savepathbeta2);
+            Process.Start(savepathbeta2);
+            // Beta3
+            var pltbeta3 = new ScottPlot.Plot(600, 400);
+            pltbeta3.PlotSignal(tvbeta3, color: Color.Red, label: "Time-varying Beta3");
+            pltbeta3.Legend();
+            pltbeta3.XLabel("History Time");
+            pltbeta3.YLabel("Beta3");
+            var savepathbeta3 = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\", "Pictures\\DynamicNS3FactorModelBeta3.png"));
+            pltbeta3.SaveFig(savepathbeta3);
+            Process.Start(savepathbeta3);
             Console.WriteLine("Press any key to exit");
             Console.ReadKey();
         }

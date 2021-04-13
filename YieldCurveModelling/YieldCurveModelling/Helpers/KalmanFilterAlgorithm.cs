@@ -13,7 +13,7 @@ namespace YieldCurveModelling.Helpers
         public Matrix<double> initialstatecovariance { get; set; }
         public Matrix<double> statetransition { get; set; }
         public Matrix<double> statenoisecovariance { get; set; }
-        public Matrix<double> observationmodel { get; set; }
+        public Dictionary<int,Matrix<double>> observationmodel { get; set; }
         public Matrix<double> observationnoisecov { get; set; }
         public Matrix<double> observation { get; set; }
         public bool calculateloglikelihood { get; set; }
@@ -29,13 +29,13 @@ namespace YieldCurveModelling.Helpers
                 var priorstate = statetransition.Multiply(initialstate);
                 var priorcov = statetransition.Multiply(initialstatecovariance).Multiply(statetransition.Transpose()).Add(statenoisecovariance);
                 var tempobs = GetObservationAtSingleTimePoint(i);
-                var innovation = tempobs.Subtract(observationmodel.Multiply(priorstate));
-                var innovationcov = observationmodel.Multiply(priorcov).Multiply(observationmodel.Transpose()).Add(observationnoisecov);
-                var kalmangain = priorcov.Multiply(observationmodel.Transpose()).Multiply(innovationcov.Inverse());
+                var innovation = tempobs.Subtract(observationmodel[i].Multiply(priorstate));
+                var innovationcov = observationmodel[i].Multiply(priorcov).Multiply(observationmodel[i].Transpose()).Add(observationnoisecov);
+                var kalmangain = priorcov.Multiply(observationmodel[i].Transpose()).Multiply(innovationcov.Inverse());
                 var posterioristate = priorstate.Add(kalmangain.Multiply(innovation));
                 results.Add(i, posterioristate.Clone());
                 initialstate = posterioristate.Clone();
-                initialstatecovariance = I.Subtract(kalmangain.Multiply(observationmodel)).Multiply(priorcov);
+                initialstatecovariance = I.Subtract(kalmangain.Multiply(observationmodel[i])).Multiply(priorcov);
                 if (calculateloglikelihood == true)
                 {
                     loglikelihood = loglikelihood + GetLogLiklihoodValueAtSingleTimePoint(innovationcov, innovation);
