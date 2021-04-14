@@ -10,32 +10,6 @@ using YieldCurveModelling.Helpers;
 namespace YieldCurveModelling.YieldCurveModels
 {
 
-    public class DynamicNS3FactorModel
-    { 
-        public double[] beta1 { get; set; }
-        public double[] beta2 { get; set; }
-        public double[] beta3 { get; set; }
-        public double[] lambda { get; set; }
-        public double[] tau { get; set; }
-        public Dictionary<int, double[]> GetYields()
-        {
-            var result = new Dictionary<int, double[]>();
-            for (int t = 0; t < beta1.Length; t++)
-            {
-                var temp = new double[tau.Length];
-                for (int i = 0; i < tau.Length; i++)
-                {
-                    var scalefactor = tau[i] / lambda[t];
-                    var a = (1 - Math.Exp(-scalefactor)) / scalefactor;
-                    var b = a - Math.Exp(-scalefactor);
-
-                    temp[i] = beta1[t] + beta2[t] * a + beta3[t] * b;
-                }
-                result.Add(t, temp.Clone() as double[]);
-            }
-            return result;
-        }
-    }
     public class DynamicNS3FactorModelCalibration
     {
         public Dictionary<string,double[]> yields { get; set; }
@@ -76,7 +50,7 @@ namespace YieldCurveModelling.YieldCurveModels
             var optimizedp = PSO.Optimize();
             return optimizedp;
         }
-        public void Initialization()
+        private void Initialization()
         {
             //Calculate initialstate and initialstatecovariance
             var M = Matrix<double>.Build;
@@ -88,7 +62,7 @@ namespace YieldCurveModelling.YieldCurveModels
             var tempbeta1 = new double[30];
             var tempbeta2 = new double[30];
             var tempbeta3 = new double[30];
-            var templambda = new double[30];
+
             Parallel.For(0, 30, i =>
             {
                 tempyields = yields[yields.ElementAt(i).Key].Clone() as double[];
@@ -113,9 +87,7 @@ namespace YieldCurveModelling.YieldCurveModels
            
             initialstatecovariance[2, 0] = ArrayStatistics.Covariance(tempbeta3, tempbeta1);
             initialstatecovariance[2, 1] = ArrayStatistics.Covariance(tempbeta3, tempbeta2);
-            initialstatecovariance[2, 2] = ArrayStatistics.Covariance(tempbeta3, tempbeta3);
-
-           
+            initialstatecovariance[2, 2] = ArrayStatistics.Covariance(tempbeta3, tempbeta3);         
 
         }
         public (double[], double[], double[]) GetDynamicBetas(double[] para)
@@ -163,7 +135,7 @@ namespace YieldCurveModelling.YieldCurveModels
             }
             return (tvbeta1, tvbeta2, tvbeta3);
         }
-        public double DynamicNS3FactorModelObjfun(double[] para)
+        private double DynamicNS3FactorModelObjfun(double[] para)
         {
             // Split parameters
             var numofyields = 12;
@@ -213,7 +185,7 @@ namespace YieldCurveModelling.YieldCurveModels
 
             return loglikelihood;
         }
-        public bool checkdynamicpara(Matrix<double> posterioristate)
+        private bool checkdynamicpara(Matrix<double> posterioristate)
         {
             var result = true;
             if (posterioristate[0,0] + posterioristate[1,0] <= 0)
@@ -222,7 +194,7 @@ namespace YieldCurveModelling.YieldCurveModels
             }
             return result;
         }
-        public Matrix<double> GetObservationModel(double lambda,double[]matuirities)
+        private Matrix<double> GetObservationModel(double lambda,double[]matuirities)
         {
             var M = Matrix<double>.Build;
             var results = M.Dense(matuirities.Length,3);
