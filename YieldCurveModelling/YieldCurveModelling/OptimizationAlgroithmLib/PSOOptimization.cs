@@ -103,7 +103,7 @@ namespace YieldCurveModelling.OptimizationAlgorithmLib
                         minerror = localerror;
                     }
                 }
-                if (Math.Abs(oldglobalerror - minerror) < tolerance && i > 50)
+                if (Math.Abs(oldglobalerror - minerror) < tolerance && i > 60)
                 {
                     break;
                 }
