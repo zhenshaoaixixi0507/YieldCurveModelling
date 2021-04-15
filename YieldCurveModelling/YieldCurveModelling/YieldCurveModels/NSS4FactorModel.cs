@@ -275,26 +275,37 @@ namespace YieldCurveModelling.YieldCurveModels
 
             public double[] Calibration()
             {
-                var PSO = new PSOOptimization();
-                var lowerbound = new double[6] { 0.0000001, -29.99, -29.99, -29.99, 0.00000001, 0.00000001 };
-                var upperbound = new double[6] { 14.99, 29.99, 29.99, 29.99, 29.99, 29.99 };
-                PSO.initialguess = new double[6] { 2.1, -1.8, -2.1, 8.2, 0.5, 11.2 };
-                PSO.lowerbound = lowerbound;
-                PSO.upperbound = upperbound;
-                PSO.maximumiteration = 5000;
-                PSO.numofswarms = 200;
-                PSO.inertiaweightmax = 1.2;
-                PSO.inertiaweightmin = 0.1;
-                PSO.objectfun = Objfun;
-                PSO.tolerance = 0.000000001;
-                PSO.Vmax = 4;
-                PSO.c1 = 2;
-                PSO.c2 = 2;
-                PSO.chi = 0.73;
-                var optimizedp = PSO.Optimize();
-                return optimizedp;
+               var lowerbound = new double[6] { 0.0000001, -29.99, -29.99, -29.99, 0.00000001, 0.00000001 };
+               var upperbound = new double[6] { 14.99, 29.99, 29.99, 29.99, 29.99, 29.99 };
+            //var PSO = new PSOOptimization();
+            //PSO.initialguess = new double[6] { 2.1, -1.8, -2.1, 8.2, 0.5, 11.2 };
+            //PSO.lowerbound = lowerbound;
+            //PSO.upperbound = upperbound;
+            //PSO.maximumiteration = 5000;
+            //PSO.numofswarms = 200;
+            //PSO.inertiaweightmax = 1.2;
+            //PSO.inertiaweightmin = 0.1;
+            //PSO.objectfun = Objfun;
+            //PSO.tolerance = 0.000000001;
+            //PSO.Vmax = 4;
+            //PSO.c1 = 2;
+            //PSO.c2 = 2;
+            //PSO.chi = 0.73;
+            //var optimizedp = PSO.Optimize();
+            var ChaoticPSO = new ChaoticPSOOptimization();
+            ChaoticPSO.lowerbound = lowerbound;
+            ChaoticPSO.upperbound = upperbound;
+
+            ChaoticPSO.inertiaweightmax = 1.2;
+            ChaoticPSO.inertiaweightmin = 0.1;
+            ChaoticPSO.objectfun = StaticNS4FactorModelObjfun;
+            ChaoticPSO.tolerance = 0.000000001;
+            ChaoticPSO.c1 = 2;
+            ChaoticPSO.c2 = 2;
+            var optimizedp = ChaoticPSO.Optimize();
+            return optimizedp;
             }
-            public double Objfun(double[] para)
+            public double StaticNS4FactorModelObjfun(double[] para)
             {
                 var sns4factor = new StaticNS4FactorModel();
                 sns4factor.beta1 = para[0];

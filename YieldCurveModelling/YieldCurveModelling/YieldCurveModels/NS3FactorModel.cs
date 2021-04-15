@@ -253,21 +253,34 @@ namespace YieldCurveModelling.YieldCurveModels
         {
             var lowerbound = new double[4] { 0.0000001, -29.99, -29.99, 0.0000001 };
             var upperbound = new double[4] { 14.99, 29.99, 29.99, 29.99 };
-            var PSO = new PSOOptimization();
-            PSO.initialguess = new double[4] { 2.1, -1.5, -2.1, 0.87 };
-            PSO.lowerbound = lowerbound;
-            PSO.upperbound = upperbound;
-            PSO.maximumiteration = 5000;
-            PSO.numofswarms = 200;
-            PSO.inertiaweightmax = 1.2;
-            PSO.inertiaweightmin = 0.1;
-            PSO.objectfun = StaticNS3FactorModelObjfun;
-            PSO.tolerance = 0.000000001;
-            PSO.Vmax = 4;
-            PSO.c1 = 2;
-            PSO.c2 = 2;
-            PSO.chi = 0.73;
-            var optimizedp = PSO.Optimize();
+            //var PSO = new PSOOptimization();
+            //PSO.initialguess = new double[4] { 2.1, -1.5, -2.1, 0.87 };
+            //PSO.lowerbound = lowerbound;
+            //PSO.upperbound = upperbound;
+            //PSO.maximumiteration = 5000;
+            //PSO.numofswarms = 200;
+            //PSO.inertiaweightmax = 1.2;
+            //PSO.inertiaweightmin = 0.1;
+            //PSO.objectfun = StaticNS3FactorModelObjfun;
+            //PSO.tolerance = 0.000000001;
+            //PSO.Vmax = 4;
+            //PSO.c1 = 2;
+            //PSO.c2 = 2;
+            //PSO.chi = 0.73;
+            //var optimizedp = PSO.Optimize();
+
+            var ChaoticPSO = new ChaoticPSOOptimization();
+            ChaoticPSO.lowerbound = lowerbound;
+            ChaoticPSO.upperbound = upperbound;
+
+            ChaoticPSO.inertiaweightmax = 1.2;
+            ChaoticPSO.inertiaweightmin = 0.1;
+            ChaoticPSO.objectfun = StaticNS3FactorModelObjfun;
+            ChaoticPSO.tolerance = 0.000000001;
+            ChaoticPSO.c1 = 2;
+            ChaoticPSO.c2 = 2;
+            var optimizedp = ChaoticPSO.Optimize();
+
             return optimizedp;
         }
         public double StaticNS3FactorModelObjfun(double[]para)
