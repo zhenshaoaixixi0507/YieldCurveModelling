@@ -69,6 +69,7 @@
     <Compile Include="OptimizationAlgroithmLib\PSOOptimization.cs" />
     <Compile Include="YieldCurveModels\NS3FactorModel.cs" />
     <Compile Include="YieldCurveModels\NSS4FactorModel.cs" />
+    <Compile Include="YieldCurveModels\VasicekTwoFactorModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
