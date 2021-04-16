@@ -65,7 +65,7 @@ namespace YieldCurveModelling.YieldCurveModels
 
         public double[] Calibration()
         {
-            var lowerbound = new double[9] { -14.99, -14.99, 0.0000001, 0.0000001, 0.0000001, 0.0000001, 0.0000001, -14.99, -14.99 };
+            var lowerbound = new double[9] { -14.99, -14.99, -0.9999999, 0.0000001, 0.0000001, 0.0000001, 0.0000001, -14.99, -14.99 };
             var upperbound = new double[9] { 14.99, 14.99, 0.9999999, 4.99, 4.99, 4.99, 4.99, 14.99, 14.99 };
 
             var ChaoticPSO = new ChaoticPSOOptimization();
@@ -84,7 +84,7 @@ namespace YieldCurveModelling.YieldCurveModels
         private double StaticVasicekTwoFactorModelObj(double[] para)
         {
             var error = 0.0;
-            var lowerbound = new double[9] { -14.99, -14.99, 0.0000001, 0.0000001, 0.0000001, 0.0000001, 0.0000001, -14.99, -14.99 };
+            var lowerbound = new double[9] { -14.99, -14.99, -0.9999999, 0.0000001, 0.0000001, 0.0000001, 0.0000001, -14.99, -14.99 };
             var upperbound = new double[9] { 14.99, 14.99, 0.9999999, 4.99, 4.99, 4.99, 4.99, 14.99, 14.99 };
             if (CheckStaticVasicekTwoFactorModelPara(para, lowerbound, upperbound) == false)
             {
