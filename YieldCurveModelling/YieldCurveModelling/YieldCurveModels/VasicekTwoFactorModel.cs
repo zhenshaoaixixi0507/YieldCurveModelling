@@ -9,53 +9,47 @@ namespace YieldCurveModelling.YieldCurveModels
 {
     public class StaticVasicekTwoFactorModel
     {
+        //Implement Econometric Analysis of a Continuous Time Multi-Factor Generalized Vasicek Term Structure Model: International Evidence
         public double x10 { get; set; }
         public double x20 { get; set; }
+        public double mu { get; set; }
         public double rho12 { get; set; }
-        public double sigma1 { get; set; }
-        public double sigma2 { get; set; }
-        public double k1 { get; set; }
-        public double k2 { get; set; }
-        public double mu1 { get; set; }
-        public double mu2 { get; set; }
+        public double theta1 { get; set; }
+        public double theta2 { get; set; }
+        public double c1 { get; set; }
+        public double c2 { get; set; }
+        public double epsilon1 { get; set; }
+        public double epsilon2 { get; set; }
         public double[] maturities { get; set; }
 
         public double[] GetYields()
         {
             var result = new double[maturities.Length];
+            var longtermyield = GetLongTermYield();
             for (int i = 0; i < result.Length; i++)
             {
-                result[i] = GetYield(maturities[i]);
+                result[i] = longtermyield - GetOmegaValue(maturities[i])-GetHValue(epsilon1*maturities[i])*x10-GetHValue(epsilon2*maturities[i])*x20;
             }
             return result;
         }
-        private double GetYield(double tau)
-        {
-            var B1 = GetBValue(k1, tau);
-            B1 = B1 * x10;
-            var B2 = GetBValue(k2, tau);
-            B2 = B2 * x20;
-            var Pi = GetPiValue(tau);
-            return -(Pi + B1 + B2) / tau;
-        }
-        private double GetPiValue(double tau)
-        {
-            var item1 = rho12 * sigma1 * sigma2 / (2 * k1 * k2);
-            var item2 = (1 - Math.Exp(-(k1 + k2) * tau)) / (k1 + k2);
-            var item3 = (1 - Math.Exp(-k2 * tau)) / k2;
-            var item4 = (1 - Math.Exp(-k1 * tau)) / k1;
-            item1 = item1 * (item2 + item3 + item4 + tau);
 
-            var B1 = GetBValue(k1, tau);
-            var B2 = GetBValue(k2, tau);
-            B1 = (B1 + tau) * (sigma1 * sigma1 / (2 * k1 * k1) - mu1) - sigma1 * sigma1 / (4 * k1 * k1) * B1 * B1;
-            B2 = (B2 + tau) * (sigma2 * sigma2 / (2 * k2 * k2) - mu2) - sigma2 * sigma2 / (4 * k2 * k2) * B2 * B2;
-            item1 = item1 + B1 + B2;
-            return item1;
-        }
-        private double GetBValue(double k, double tau)
+        private double GetLongTermYield()
         {
-            return (Math.Exp(-k * tau) - 1) / k;
+            return mu + theta1 * (c1 / epsilon1 + c2 * rho12 / epsilon2) + theta2 * c2 * Math.Sqrt(1 - rho12 * rho12) / epsilon2 - 0.5 * (c1 * c1 / (epsilon1 * epsilon1) + 2 * c1 * c2 * rho12 / (epsilon1 * epsilon2) + c2 * c2 / (epsilon2 * epsilon2));
+        }
+        private double GetOmegaValue(double tau)
+        {
+            var item1 = GetHValue(epsilon1 * tau) * c1 / epsilon1 * (theta1 - (c1 / epsilon1 + c2 * rho12 / epsilon2));
+            var item2= GetHValue(epsilon2 * tau) * c2 / epsilon2* (theta1*rho12+theta2*Math.Sqrt(1-rho12*rho12) - (c1*rho12 / epsilon1 + c2/ epsilon2));
+            var item3 = 0.5 * GetHValue(2 * epsilon1 * tau) * c1 * c1 / (epsilon1 * epsilon1);
+            var item4 = GetHValue((epsilon1 + epsilon2) * tau) * c1 * c2 * rho12 / (epsilon1 * epsilon2);
+            var item5 = 0.5 * GetHValue(2 * epsilon2 * tau) * c2 * c2 / (epsilon2 * epsilon2);
+
+            return item1+item2+item3+item4+item5;
+        }
+        private double GetHValue(double x)
+        {
+            return (1-Math.Exp(-x)) / x;
         }
     }
     public class StaticVasicekTwoFactorModelCalibration
@@ -65,8 +59,8 @@ namespace YieldCurveModelling.YieldCurveModels
 
         public double[] Calibration()
         {
-            var lowerbound = new double[9] { -14.99, -14.99, -0.9999999, 0.0000001, 0.0000001, 0.0000001, 0.0000001, -14.99, -14.99 };
-            var upperbound = new double[9] { 14.99, 14.99, 0.9999999, 4.99, 4.99, 4.99, 4.99, 14.99, 14.99 };
+            var lowerbound = new double[10] { -14.99, -14.99, -14.99, - 0.9999999, 0.0000001, 0.0000001, 0.0000001, 0.0000001, 0.0000001, 0.0000001 };
+            var upperbound = new double[10] { 14.99, 14.99, 14.99,0.9999999, 4.99, 4.99, 4.99, 4.99, 14.99, 14.99 };
 
             var ChaoticPSO = new ChaoticPSOOptimization();
             ChaoticPSO.lowerbound = lowerbound;
@@ -84,8 +78,8 @@ namespace YieldCurveModelling.YieldCurveModels
         private double StaticVasicekTwoFactorModelObj(double[] para)
         {
             var error = 0.0;
-            var lowerbound = new double[9] { -14.99, -14.99, -0.9999999, 0.0000001, 0.0000001, 0.0000001, 0.0000001, -14.99, -14.99 };
-            var upperbound = new double[9] { 14.99, 14.99, 0.9999999, 4.99, 4.99, 4.99, 4.99, 14.99, 14.99 };
+            var lowerbound = new double[10] { -14.99, -14.99, -14.99, -0.9999999, 0.0000001, 0.0000001, 0.0000001, 0.0000001, 0.0000001, 0.0000001 };
+            var upperbound = new double[10] { 14.99, 14.99, 14.99, 0.9999999, 4.99, 4.99, 4.99, 4.99, 14.99, 14.99 };
             if (CheckStaticVasicekTwoFactorModelPara(para, lowerbound, upperbound) == false)
             {
                 error = 99999999999999.99;
@@ -94,22 +88,26 @@ namespace YieldCurveModelling.YieldCurveModels
             {
                 var x10 = para[0];
                 var x20 = para[1];
-                var rho12 = para[2];
-                var sigma1 = para[3];
-                var sigma2 = para[4];
-                var k1 = para[5];
-                var k2 = para[6];
-                var mu1 = para[7];
-                var mu2 = para[8];
+                var mu = para[2];
+                var rho12 = para[3];
+                var theta1 = para[4];
+                var theta2 = para[5];
+                var c1 = para[6];
+                var c2 = para[7];
+                var epsilon1 = para[8];
+                var epsilon2 = para[9];
                 var SV2Factor = new StaticVasicekTwoFactorModel();
                 SV2Factor.maturities = maturities;
                 SV2Factor.x10 = x10;
                 SV2Factor.x20 = x20;
+                SV2Factor.mu = mu;
                 SV2Factor.rho12 = rho12;
-                SV2Factor.sigma1 = sigma1;
-                SV2Factor.sigma2 = sigma2;
-                SV2Factor.k1 = k2;
-                SV2Factor.k2 = k2;
+                SV2Factor.theta1 = theta1;
+                SV2Factor.theta2 = theta2;
+                SV2Factor.c1 = c1;
+                SV2Factor.c2 = c2;
+                SV2Factor.epsilon1 = epsilon1;
+                SV2Factor.epsilon2 = epsilon2;
                 var modelyields = SV2Factor.GetYields();
 
                 for (int i = 0; i < modelyields.Length; i++)
@@ -144,22 +142,26 @@ namespace YieldCurveModelling.YieldCurveModels
         {
             var x10 = para[0];
             var x20 = para[1];
-            var rho12 = para[2];
-            var sigma1 = para[3];
-            var sigma2 = para[4];
-            var k1 = para[5];
-            var k2 = para[6];
-            var mu1 = para[7];
-            var mu2 = para[8];
+            var mu = para[2];
+            var rho12 = para[3];
+            var theta1 = para[4];
+            var theta2 = para[5];
+            var c1 = para[6];
+            var c2 = para[7];
+            var epsilon1 = para[8];
+            var epsilon2 = para[9];
             var SV2Factor = new StaticVasicekTwoFactorModel();
             SV2Factor.maturities = maturities;
             SV2Factor.x10 = x10;
             SV2Factor.x20 = x20;
+            SV2Factor.mu = mu;
             SV2Factor.rho12 = rho12;
-            SV2Factor.sigma1 = sigma1;
-            SV2Factor.sigma2 = sigma2;
-            SV2Factor.k1 = k2;
-            SV2Factor.k2 = k2;
+            SV2Factor.theta1 = theta1;
+            SV2Factor.theta2 = theta2;
+            SV2Factor.c1 = c1;
+            SV2Factor.c2 = c2;
+            SV2Factor.epsilon1 = epsilon1;
+            SV2Factor.epsilon2 = epsilon2;
             var modelyields = SV2Factor.GetYields();
             return modelyields;
         }
