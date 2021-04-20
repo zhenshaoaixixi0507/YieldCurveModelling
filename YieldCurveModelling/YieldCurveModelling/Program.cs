@@ -63,25 +63,44 @@ namespace YieldCurveModelling
             //var savepath2 = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\", "Pictures\\NS4FactorModelEmpiricalResult.png"));
             //plt2.SaveFig(savepath2);
             //Process.Start(savepath2);
-            // Test--------------------------------------- Static Vasicek Two factors model------------------------------------------------//
-            var V2FactorCal = new StaticVasicekTwoFactorModelCalibration();
-            V2FactorCal.yields = yields;
-            V2FactorCal.maturities = tau;
-            var V2FactorOptPara = V2FactorCal.Calibration();
-            var V2Factor = new StaticVasicekTwoFactorModel();
-            V2Factor.maturities = tau;
-            var modeloutputV2 = V2FactorCal.CalcualteModelOutput(V2FactorOptPara);
-            Console.WriteLine("Vasicek 2 Factor Model Is Calibrated.");
+            //// Test--------------------------------------- Static Vasicek Two factors model------------------------------------------------//
+            //var V2FactorCal = new StaticVasicekTwoFactorModelCalibration();
+            //V2FactorCal.yields = yields;
+            //V2FactorCal.maturities = tau;
+            //var V2FactorOptPara = V2FactorCal.Calibration();
+            //var V2Factor = new StaticVasicekTwoFactorModel();
+            //V2Factor.maturities = tau;
+            //var modeloutputV2 = V2FactorCal.CalcualteModelOutput(V2FactorOptPara);
+            //Console.WriteLine("Vasicek 2 Factor Model Is Calibrated.");
+            ////Plot
+            //var pltv2 = new ScottPlot.Plot(600, 400);
+            //pltv2.PlotSignalXY(tau, yields, color: Color.Red, label: "Market Data");
+            //pltv2.PlotSignalXY(tau, modeloutputV2, color: Color.Blue, label: "Model Output");
+            //pltv2.Legend();
+            //pltv2.XLabel("Time to maturity");
+            //pltv2.YLabel("Annualized yields (%)");
+            //var savepathV2 = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\", "Pictures\\VasicekTwoFactorModelEmpiricalResult.png"));
+            //pltv2.SaveFig(savepathV2);
+            //Process.Start(savepathV2);
+            // Test--------------------------------------- Static Longstaff Schwartz Two factors model------------------------------------------------//
+            var LS2FactorCal = new StaticTwoFactorLongstaffSchwartzModelCalibration();
+            LS2FactorCal.yields = yields;
+            LS2FactorCal.maturities = tau;
+            var LS2FactorOptPara = LS2FactorCal.Calibration();
+            var LS2Factor = new StaticTwoFactorLongstaffSchwartzModel();
+            LS2Factor.maturities = tau;
+            var modeloutputLS2 = LS2FactorCal.CalcualteModelOutput(LS2FactorOptPara);
+            Console.WriteLine("Longstaff Schwartz 2 Factor Model Is Calibrated.");
             //Plot
-            var pltv2 = new ScottPlot.Plot(600, 400);
-            pltv2.PlotSignalXY(tau, yields, color: Color.Red, label: "Market Data");
-            pltv2.PlotSignalXY(tau, modeloutputV2, color: Color.Blue, label: "Model Output");
-            pltv2.Legend();
-            pltv2.XLabel("Time to maturity");
-            pltv2.YLabel("Annualized yields (%)");
-            var savepathV2 = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\", "Pictures\\VasicekTwoFactorModelEmpiricalResult.png"));
-            pltv2.SaveFig(savepathV2);
-            Process.Start(savepathV2);
+            var pltls2 = new ScottPlot.Plot(600, 400);
+            pltls2.PlotSignalXY(tau, yields, color: Color.Red, label: "Market Data");
+            pltls2.PlotSignalXY(tau, modeloutputLS2, color: Color.Blue, label: "Model Output");
+            pltls2.Legend();
+            pltls2.XLabel("Time to maturity");
+            pltls2.YLabel("Annualized yields (%)");
+            var savepathls2 = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\", "Pictures\\LongstaffSchwartzTwoFactorModelEmpiricalResult.png"));
+            pltls2.SaveFig(savepathls2);
+            Process.Start(savepathls2);
 
             ////Test dynamic NS3 factor model
             //var DynaimcNS3factor = new DynamicNS3FactorModelCalibration();
