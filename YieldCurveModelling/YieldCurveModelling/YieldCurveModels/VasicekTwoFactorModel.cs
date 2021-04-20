@@ -14,8 +14,8 @@ namespace YieldCurveModelling.YieldCurveModels
         public double x20 { get; set; }
         public double mu { get; set; }
         public double rho12 { get; set; }
-        public double theta1 { get; set; }
-        public double theta2 { get; set; }
+        public double theta1 { get; set; }//market price of risk
+        public double theta2 { get; set; }//market price of risk
         public double c1 { get; set; }
         public double c2 { get; set; }
         public double epsilon1 { get; set; }
@@ -59,7 +59,7 @@ namespace YieldCurveModelling.YieldCurveModels
 
         public double[] Calibration()
         {
-            var lowerbound = new double[10] { -14.99, -14.99, -14.99, - 0.9999999, 0.0000001, 0.0000001, 0.0000001, 0.0000001, 0.0000001, 0.0000001 };
+            var lowerbound = new double[10] { -14.99, -14.99, -14.99, - 0.9999999, -4.99, -4.99, 0.0000001, 0.0000001, 0.0000001, 0.0000001 };
             var upperbound = new double[10] { 14.99, 14.99, 14.99,0.9999999, 4.99, 4.99, 4.99, 4.99, 14.99, 14.99 };
 
             var ChaoticPSO = new ChaoticPSOOptimization();
@@ -78,7 +78,7 @@ namespace YieldCurveModelling.YieldCurveModels
         private double StaticVasicekTwoFactorModelObj(double[] para)
         {
             var error = 0.0;
-            var lowerbound = new double[10] { -14.99, -14.99, -14.99, -0.9999999, 0.0000001, 0.0000001, 0.0000001, 0.0000001, 0.0000001, 0.0000001 };
+            var lowerbound = new double[10] { -14.99, -14.99, -14.99, -0.9999999, -4.99, -4.99, 0.0000001, 0.0000001, 0.0000001, 0.0000001 };
             var upperbound = new double[10] { 14.99, 14.99, 14.99, 0.9999999, 4.99, 4.99, 4.99, 4.99, 14.99, 14.99 };
             if (CheckStaticVasicekTwoFactorModelPara(para, lowerbound, upperbound) == false)
             {

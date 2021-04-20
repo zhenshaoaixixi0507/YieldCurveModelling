@@ -25,7 +25,7 @@ namespace YieldCurveModelling
             USDataReader.filepath= Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\", "Data\\USDYieldCurveDailyData2020.xml"));
             var Data = USDataReader.GetFullTimeSeriesData();
 
-            var yields = Data["2020-06-18"];
+            var yields = Data["2020-02-11"];
             var tau = new double[12] { (double)1/12, (double)2/12, (double)3/12, (double)6/12,1,2,3,5,7,10,20,30};
 
             //// Test--------------------------------------- Static NS 3 factors model------------------------------------------------//
